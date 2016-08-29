@@ -6,6 +6,8 @@ import (
 	"github.com/nathanjsharpe/trakit/config"
 	"github.com/nathanjsharpe/trakit/handlers"
 	"github.com/nathanjsharpe/trakit/output"
+	"os/exec"
+	"regexp"
 )
 
 const VERSION = "0.1.0"
@@ -27,7 +29,7 @@ func handle(args []string) {
 		case "config":
 			handlers.Config(args)
 		case "environments", "env":
-			fmt.Println(config.GetConfig().EnvironmentKeys)
+			fmt.Println(config.CurrentEnvironment())
 		case "landmark", "landmarks", "lm":
 			config.ValidateSession()
 			handlers.Landmark(args)
@@ -42,6 +44,23 @@ func handle(args []string) {
 		case "version", "versions":
 			config.ValidateSession()
 			handlers.Version(args, VERSION)
+		case "logs":
+			fmt.Println("Searching for error with ID", args[1])
+			env := config.CurrentEnvironment()
+			dest := env.SshUser + "@trakit." + env.Key
+			currentCheck := "App Api"
+			out, err := exec.Command("ssh", dest, "cat", env.AppApiLogPath).Output()
+			if err != nil {
+				panic(err)
+			}
+			rx := `ERROR.+` + args[1] + `\n(?:!.+\n)+`
+			regx, _ := regexp.Compile(rx)
+			result := regx.FindString(string(out))
+			if result == "" {
+				fmt.Println("No error found with ID", args[1])
+			} else {
+				fmt.Printf("Found error with ID %s on %s:\n %s", args[1], currentCheck, result)
+			}
 		default:
 			Help(args)
 		}

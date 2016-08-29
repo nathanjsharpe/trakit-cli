@@ -14,9 +14,11 @@ var ConfigPath string
 var SessionPath string
 
 type Environment struct {
-	Key    string `json:"key"`
-	AppApi string `json:"appApi"`
-	WebApp string `json:"webApp"`
+	Key           string `json:"key"`
+	AppApi        string `json:"appApi"`
+	WebApp        string `json:"webApp"`
+	SshUser       string `json:"sshUser"`
+	AppApiLogPath string `json:"appApiLogPath"`
 }
 
 type Configuration struct {
@@ -70,6 +72,14 @@ func GetEnvironment(key string) (Environment, error) {
 	}
 
 	return Environment{}, errors.New("No environment with key " + key + ". Make sure your configuration specified an environment with that key.")
+}
+
+func CurrentEnvironment() Environment {
+	env, err := GetEnvironment(LoadSession().Environment)
+	if err != nil {
+		panic(err)
+	}
+	return env
 }
 
 func GenerateConfigFile() {
