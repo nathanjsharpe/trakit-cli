@@ -31,7 +31,7 @@ func init() {
 		os.Exit(1)
 	}
 
-	err = os.MkdirAll(configDir, 0644)
+	err = os.MkdirAll(configDir, 0755)
 	if err != nil {
 		fmt.Println("Could not create config directory:", configDir)
 		os.Exit(1)
