@@ -59,6 +59,10 @@ func ValidateSession() {
 	}
 }
 
+func DeleteSession() error {
+	return os.Remove(SessionPath)
+}
+
 func exitForRelogin(message string) {
 	fmt.Println(message, "Log in and try again.")
 	os.Exit(1)

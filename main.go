@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/nathanjsharpe/trakit/config"
 	"github.com/nathanjsharpe/trakit/handlers"
+	"github.com/nathanjsharpe/trakit/output"
 )
 
 const VERSION = "0.1.0"
@@ -24,8 +25,7 @@ func handle(args []string) {
 		first, args := args[0], args[1:]
 		switch first {
 		case "config":
-			environments := config.GetConfig()
-			fmt.Println(environments)
+			handlers.Config(args)
 		case "environments", "env":
 			fmt.Println(config.GetConfig().EnvironmentKeys)
 		case "landmark", "landmarks", "lm":
@@ -46,5 +46,19 @@ func handle(args []string) {
 			Help(args)
 		}
 	}
+}
 
+func Help(args []string) {
+	data := [][]string{
+		[]string{"trakit config", "Manage trakit-cli configuration"},
+		[]string{"trakit environments", "List possible trakit environments"},
+		[]string{"trakit landmark", "Landmarks resource"},
+		[]string{"trakit login", "Log into Trakit"},
+		[]string{"trakit logout", "Log out of Trakit"},
+		[]string{"trakit session", "Display details of current session"},
+		[]string{"trakit user", "Users resource"},
+		[]string{"trakit version", "Print version of Trakit CLI and services for selected environment"},
+	}
+
+	output.PrintBorderlessTable(data)
 }
